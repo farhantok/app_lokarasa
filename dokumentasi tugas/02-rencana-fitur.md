@@ -61,12 +61,12 @@ Ekspektasi implementasi adalah menyediakan informasi yang lengkap dan mudah dipa
 
 **Role Penanggung Jawab:** `[Frontend | Backend]`
 
-**Sumber Data:** `[Internal System]`
+**Sumber Data:** `Internal System`
 
 **Deskripsi & Ekspektasi:**
-`[Fitur ini memungkinkan pengguna memberikan ulasan dan rating terhadap film atau anime yang telah ditonton. Pengguna dapat menulis komentar, memberikan nilai rating, serta melihat review yang diberikan oleh pengguna lain. Seluruh data review dan rating disimpan pada database aplikasi.
+`Fitur ini memungkinkan pengguna memberikan ulasan dan rating terhadap film atau anime yang telah ditonton. Pengguna dapat menulis komentar, memberikan nilai rating, serta melihat review yang diberikan oleh pengguna lain. Seluruh data review dan rating disimpan pada database aplikasi.
 
-Ekspektasi dari fitur ini adalah menciptakan interaksi antar pengguna dan memberikan referensi tambahan sebelum menonton suatu film atau anime. Sistem harus mampu menyimpan review dengan aman, menampilkan rating rata-rata, serta memperbarui data secara otomatis ketika terdapat ulasan baru.]`
+Ekspektasi dari fitur ini adalah menciptakan interaksi antar pengguna dan memberikan referensi tambahan sebelum menonton suatu film atau anime. Sistem harus mampu menyimpan review dengan aman, menampilkan rating rata-rata, serta memperbarui data secara otomatis ketika terdapat ulasan baru.`
 
 ---
 

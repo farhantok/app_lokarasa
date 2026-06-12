@@ -2,22 +2,27 @@
 
 namespace App\Models;
 
+use Database\Factories\AnimeFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable(['mal_id', 'title', 'synopsis', 'image_url', 'score', 'episodes', 'status', 'aired_from'])]
 class Anime extends Model
 {
+    /** @use HasFactory<AnimeFactory> */
+    use HasFactory;
+
     protected $table = 'animes';
 
-    protected $fillable = [
-        'mal_id',
-        'title',
-        'synopsis',
-        'image_url',
-        'score',
-        'episodes',
-        'status',
-        'aired_from',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'aired_from' => 'date',
+            'score' => 'float',
+            'episodes' => 'integer',
+        ];
+    }
 
     public function genres()
     {

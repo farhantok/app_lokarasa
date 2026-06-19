@@ -17,19 +17,18 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2' # Disesuaikan dengan Laravel modern yang Anda pakai
+        php-version: '8.2'
         extensions: mbstring, xml, ctype, iconv, pdo_mysql, bcmath, gd
         coverage: none
 
     - name: Copy .env File
-      # Ditambahkan 'cd backend' agar sistem masuk ke folder Laravel terlebih dahulu
       run: |
         cd backend
         php -r "file_exists('.env') || copy('.env.example', '.env');"
 
     - name: Install Dependencies
-      # Ditambahkan '--working-dir=backend' agar Composer mendeteksi composer.json di folder backend
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --working-dir=backend
+      # FIXED: Menambahkan --ignore-platform-reqs di akhir baris
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --working-dir=backend --ignore-platform-reqs
 
     - name: Generate Application Key
       run: |
@@ -50,7 +49,6 @@ jobs:
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
       env:
         DB_CONNECTION: sqlite
-        # Jalur database disesuaikan agar mengarah tepat ke dalam subfolder backend
         DB_DATABASE: /home/runner/work/app_lokarasa/app_lokarasa/backend/database/database.sqlite
       run: |
         cd backend

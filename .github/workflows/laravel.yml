@@ -1,0 +1,57 @@
+name: Laravel (APP_LokaRasa Backend Test)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  laravel-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2' # Disesuaikan dengan Laravel modern yang Anda pakai
+        extensions: mbstring, xml, ctype, iconv, pdo_mysql, bcmath, gd
+        coverage: none
+
+    - name: Copy .env File
+      # Ditambahkan 'cd backend' agar sistem masuk ke folder Laravel terlebih dahulu
+      run: |
+        cd backend
+        php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install Dependencies
+      # Ditambahkan '--working-dir=backend' agar Composer mendeteksi composer.json di folder backend
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --working-dir=backend
+
+    - name: Generate Application Key
+      run: |
+        cd backend
+        php artisan key:generate
+
+    - name: Directory Permissions
+      run: |
+        cd backend
+        chmod -R 777 storage bootstrap/cache
+
+    - name: Create SQLite Database for Testing
+      run: |
+        cd backend
+        mkdir -p database
+        touch database/database.sqlite
+
+    - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
+      env:
+        DB_CONNECTION: sqlite
+        # Jalur database disesuaikan agar mengarah tepat ke dalam subfolder backend
+        DB_DATABASE: /home/runner/work/app_lokarasa/app_lokarasa/backend/database/database.sqlite
+      run: |
+        cd backend
+        php artisan test

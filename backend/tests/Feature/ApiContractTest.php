@@ -7,43 +7,29 @@ use Tests\TestCase;
 
 class ApiContractTest extends TestCase
 {
-    // Gunakan trait ini jika test Anda membutuhkan database kosong yang segar setiap kali dijalankan
     use RefreshDatabase;
 
     /**
-     * Test Kontrak API untuk Mengambil Daftar Menu Makanan LokaRasa
+     * Test API Contract untuk pencarian Anime
      */
-    public function test_get_menu_list_matches_contract(): void
+    public function test_anime_search_endpoint_returns_successful_response(): void
     {
-        // 1. Simulasikan data tiruan di database (Opsional, sesuaikan dengan seeder Anda)
-        // \App\Models\Menu::factory()->create(['nama' => 'Nasi Goreng Kampoeng', 'harga' => 25000]);
+        // 1. Tembak endpoint API Anime Search (contoh mencari 'naruto')
+        $response = $this->getJson('/api/anime/search?title=naruto');
 
-        // 2. Tembak endpoint API Backend yang ingin diuji kontraknya
-        $response = $this->getJson('/api/menu');
-
-        // 3. Pastikan HTTP Status Code yang kembali adalah 200 (OK/Success)
+        // 2. Pastikan HTTP Status Code yang kembali adalah 200 (OK/Success)
         $response->assertStatus(200);
+    }
 
-        // 4. Validasi Struktur Kontrak (Memastikan struktur JSON sesuai kesepakatan Frontend & Backend)
-        $response->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-                '*' => [ // Tanda bintang (*) artinya semua item di dalam array 'data' wajib memiliki field di bawah ini
-                    'id',
-                    'nama_menu',
-                    'deskripsi',
-                    'harga',
-                    'kategori',
-                    'gambar_url',
-                    'created_at'
-                ]
-            ]
-        ]);
+    /**
+     * Test API Contract untuk pencarian Movie
+     */
+    public function test_movie_search_endpoint_returns_successful_response(): void
+    {
+        // 1. Tembak endpoint API Movie Search (contoh mencari 'avengers')
+        $response = $this->getJson('/api/movie/search?title=avengers');
 
-        // 5. Validasi Tipe Data atau Nilai Kontrak (Opsional, memastikan tipe datanya cocok)
-        $response->assertJsonFragment([
-            'status' => 'success'
-        ]);
+        // 2. Pastikan HTTP Status Code yang kembali adalah 200 (OK/Success)
+        $response->assertStatus(200);
     }
 }

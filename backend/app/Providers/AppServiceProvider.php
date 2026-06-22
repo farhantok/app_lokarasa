@@ -12,7 +12,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(\App\Contracts\AnimeInterface::class, \App\Services\AnimeService::class);
+        $this->app->bind(\App\Contracts\FilmInterface::class, \App\Services\FilmService::class);
+        $this->app->bind(\App\Contracts\ReviewInterface::class, \App\Services\ReviewService::class);
+        $this->app->bind(\App\Contracts\WatchlistInterface::class, \App\Services\WatchlistService::class);
+        $this->app->bind(\App\Contracts\DetailInterface::class, \App\Services\DetailService::class);
     }
 
     /**
@@ -21,8 +25,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::enforceMorphMap([
-        'movie' => \App\Models\Movie::class,
-        'anime' => \App\Models\Anime::class,
-    ]);
+            'movie' => \App\Models\Movie::class,
+            'anime' => \App\Models\Anime::class,
+        ]);
     }
 }

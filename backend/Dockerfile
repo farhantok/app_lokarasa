@@ -15,8 +15,11 @@ RUN apt-get update && apt-get install -y \
 # 2. Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# 3. Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# 3. Configure Apache modules
+# Disable conflicting MPMs and enable mpm_prefork (required for mod_php)
+RUN a2dismod mpm_event mpm_worker || true \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
 
 # 4. Set working directory
 WORKDIR /var/www/html

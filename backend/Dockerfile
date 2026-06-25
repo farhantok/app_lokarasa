@@ -15,11 +15,8 @@ RUN apt-get update && apt-get install -y \
 # 2. Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# 3. Configure Apache modules
-# Disable conflicting MPMs and enable mpm_prefork (required for mod_php)
-RUN a2dismod mpm_event mpm_worker || true \
-    && a2enmod mpm_prefork \
-    && a2enmod rewrite
+# 3. Enable Apache mod_rewrite
+RUN a2enmod rewrite
 
 # 4. Set working directory
 WORKDIR /var/www/html
@@ -39,8 +36,9 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# 9. Set default port to 8080 to avoid permission issues, though Railway runs as root by default
-ENV PORT=80
+# 9. Copy entrypoint script and make it executable
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# 10. Dynamically set Apache port and start server (handles Railway's dynamic PORT)
-CMD sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf && docker-php-entrypoint apache2-foreground
+# 10. Start server using entrypoint
+CMD ["entrypoint.sh"]

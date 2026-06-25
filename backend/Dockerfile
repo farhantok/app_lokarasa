@@ -30,5 +30,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # 7. Jalankan server PHP terisolasi (Port dinamis akan diatur otomatis oleh Railway)
 EXPOSE 80
 # (Kode-kode bagian atas dari nomor 1 sampai 7 biarkan tetap sama)
-CMD php artisan config:clear && php artisan cache:clear && php artisan view:clear && php artisan migrate --force && php -S 0.0.0.0:80 -t public
+CMD php artisan config:clear && php artisan cache:clear && php -S 0.0.0.0:$PORT -t public
 # Jalankan pembersihan cache konfigurasi secara paksa sebelum server dinyalakan

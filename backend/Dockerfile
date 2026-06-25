@@ -1,6 +1,6 @@
-FROM php:8.3-fpm
+FROM php:8.3-apache
 
-# 1. Install system dependencies yang dibutuhkan Laravel
+# 1. Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -10,25 +10,34 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 2. Ambil Composer versi terbaru
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# 2. Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# 3. Set working directory ke standar Railway
+# 3. Enable Apache mod_rewrite
+RUN a2enmod rewrite
+
+# 4. Set working directory
 WORKDIR /var/www/html
 
-# 4. Copy seluruh source code project
+# 5. Copy project files
 COPY . .
 
-# 5. Jalankan install vendor via composer
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-
-# 6. Atur hak akses permission folder storage & cache
+# 6. Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 7. Jalankan server PHP terisolasi (Port dinamis akan diatur otomatis oleh Railway)
-EXPOSE 80
-# (Kode-kode bagian atas dari nomor 1 sampai 7 biarkan tetap sama)
-CMD php artisan config:clear && php artisan cache:clear && php -S 0.0.0.0:$PORT -t public
-# Jalankan pembersihan cache konfigurasi secara paksa sebelum server dinyalakan
+# 7. Install Composer and dependencies
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# 8. Change Apache DocumentRoot to Laravel's public directory
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# 9. Set default port to 8080 to avoid permission issues, though Railway runs as root by default
+ENV PORT=80
+
+# 10. Dynamically set Apache port and start server (handles Railway's dynamic PORT)
+CMD sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf && docker-php-entrypoint apache2-foreground

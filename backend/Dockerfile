@@ -40,3 +40,9 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 # 8. Buka port default web apache
 EXPOSE 80
+
+# (Kode-kode yang atas biarkan tetap sama)
+
+# 8. Buka port default web apache dan paksa dengarkan port dinamis Railway
+EXPOSE 80
+RUN sed -i 's/Listen 80/Listen ${PORT}/g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf

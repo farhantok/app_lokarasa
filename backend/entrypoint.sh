@@ -12,5 +12,13 @@ PORT="${PORT:-80}"
 sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
 
+# Jalankan migrasi database dan bersihkan cache Laravel
+echo "Menjalankan migrasi database..."
+php artisan migrate --force
+
+echo "Membersihkan cache Laravel..."
+php artisan config:clear
+php artisan cache:clear
+
 # Eksekusi perintah utama apache
 exec docker-php-entrypoint apache2-foreground
